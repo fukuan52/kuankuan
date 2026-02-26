@@ -97,7 +97,7 @@
     /* ===== 第一屏 · 琉璃卡片区 (原留言screen01.html主体) ===== */
     .screen1 {
       /* 原 body 背景 + 内边距实现滚动驱动动画 */
-      background: url('images/背景.png') no-repeat center center fixed;
+      background: url('/kuankuan/images/背景.png') no-repeat center center fixed;
       background-size: cover;
       padding: 100px 0 50px 0;  /* 减少顶部和底部留白 */
       width: 100%;
@@ -200,7 +200,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: url('images/背景.png') no-repeat center center fixed;
+      background: url('/kuankuan/images/背景.png') no-repeat center center fixed;
       background-size: cover;
       padding: 10px 0;             /* 减少呼吸空间，与footer-note更近 */
     }
@@ -414,7 +414,7 @@
         <div class="message">
           <div class="message-info">
             <div class="info">
-              <img src="images/头像.jpg" alt="avatar" width="90" height="90">
+              <img src="/kuankuan/images/头像.jpg" alt="avatar" width="90" height="90">
               <strong>fmk</strong>
             </div>
             <span>发布于：2026/2/25 08:00:00</span>
@@ -503,7 +503,7 @@
 
       newMessage.innerHTML = '<div class="message-info">' +
         '<div class="info">' +
-        '<img src="images/头像.jpg" alt="avatar">' +
+        '<img src="/kuankuan/images/头像.jpg" alt="avatar">' +
         '<strong>' + username + '</strong>' +
         '</div>' +
         '<span>发布于：' + getCurrentTime() + '</span>' +
@@ -523,30 +523,30 @@
   <script>
     // 图片路径数组
     const images = [
-      'images/主页面背景.jpg',
-      'images/先贤春秋.jpg',
-      'images/典籍宝库.jpg',
-      'images/史记.jpg',
-      'images/周易.jpg',
-      'images/天工开物.jpg',
-      'images/img1.jpg',
-      'images/img2.jpg',
-      'images/img3.jpg',
-      'images/img4.jpg',
-      'images/孔子.jpg',
-      'images/孟子.jpg',
-      'images/小图片背景.jpg',
-      'images/庄子.jpg',
-      'images/徐霞客游记.jpg',
-      'images/本草纲目.jpg',
-      'images/沉浸体验.jpg',
-      'images/老子.jpg',
-      'images/论语.jpg',
-      'images/首页1.png',
-      'images/首页2.png',
-      'images/首页3.png',
-      'images/首页4.png',
-      'images/首页5.png'
+      '/kuankuan/images/主页面背景.jpg',
+      '/kuankuan/images/先贤春秋.jpg',
+      '/kuankuan/images/典籍宝库.jpg',
+      '/kuankuan/images/史记.jpg',
+      '/kuankuan/images/周易.jpg',
+      '/kuankuan/images/天工开物.jpg',
+      '/kuankuan/images/img1.jpg',
+      '/kuankuan/images/img2.jpg',
+      '/kuankuan/images/img3.jpg',
+      '/kuankuan/images/img4.jpg',
+      '/kuankuan/images/孔子.jpg',
+      '/kuankuan/images/孟子.jpg',
+      '/kuankuan/images/小图片背景.jpg',
+      '/kuankuan/images/庄子.jpg',
+      '/kuankuan/images/徐霞客游记.jpg',
+      '/kuankuan/images/本草纲目.jpg',
+      '/kuankuan/images/沉浸体验.jpg',
+      '/kuankuan/images/老子.jpg',
+      '/kuankuan/images/论语.jpg',
+      '/kuankuan/images/首页1.png',
+      '/kuankuan/images/首页2.png',
+      '/kuankuan/images/首页3.png',
+      '/kuankuan/images/首页4.png',
+      '/kuankuan/images/首页5.png'
     ];
 
     // 随机打乱数组
