@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>先贤 · 典籍 · 双屏沉浸</title>
+  <!-- jQuery (用于琉璃导航) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <style>
+    /* ===== 全局重置 & 滚动基座 ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, '楷体', sans-serif;
+      overflow-x: hidden;
+      background-image: url('images/主页面背景.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    /* ===== 固定顶部琉璃导航 (z-index 始终最高) ===== */
+    #nav {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      margin: 0 auto;
+      padding: 8px 25px;
+      background: rgba(255, 248, 240, 0.2);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 48px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+      display: flex;
+      list-style: none;
+      z-index: 999;
+      justify-content: flex-start;
+      align-items: center;
+      transition: background 0.3s;
+      box-sizing: border-box;
+    }
+
+    #nav li a {
+      position: relative;
+      padding: 12px 28px;
+      font: 500 22px '楷体', 'KaiTi', '优设标题黑', sans-serif;
+      border: none;
+      outline: none;
+      color: white;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      display: inline-block;
+      text-decoration: none;
+      z-index: 3;
+      white-space: nowrap;
+      transition: color 0.2s;
+      letter-spacing: 2px;
+    }
+
+    #nav li a:hover {
+      color: #fff8e7;
+      text-shadow: 0 0 12px #ffffffcc;
+    }
+
+    .slide1, .slide2 {
+      position: absolute;
+      display: inline-block;
+      height: 52px;
+      border-radius: 40px;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1.05);
+      pointer-events: none;
+    }
+
+    .slide1 {
+      background: rgba(230, 210, 180, 0.5);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+    }
+
+    .slide2 {
+      opacity: 0;
+      background: rgba(245, 235, 210, 0.4);
+      box-shadow: 0 0 25px rgba(255, 250, 240, 0.8) inset;
+      z-index: 1;
+      transition: opacity 0.3s, left 0.5s, width 0.5s, transform 0.3s;
+    }
+
+    .squeeze {
+      transform: scale(0.9);
+    }
+
+    #nav li:first-child a {
+      margin-left: 4px;
+    }
+
+    /* ===== 上下屏幕容器 ===== */
+    .screen {
+      width: 100%;
+      height: 100vh;          /* 每个屏幕正好一屏高 */
+      position: relative;
+      overflow: hidden;       /* 防止内部内容溢出产生滚动 (各自内部不滚动) */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* ----- 上半屏: 先贤3D旋转木马 (继承原背景) ----- */
+    .screen-top {
+      /* 背景图继承body背景, 同时保留3D透视 */
+      background: transparent;
+      perspective: 1500px;        /* 原body透视转移至此 */
+      display: block;              /* 不需要flex, .content绝对定位 */
+    }
+
+    /* 上半屏3D容器 — 完全复制原样式, 但定位相对于.screen-top */
+    .screen-top .content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-origin: center;
+      transform-style: preserve-3d;
+      transform: translateZ(-75vw) rotateY(0deg);
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .screen-top .item {
+      position: absolute;
+      width: 157.5vw;
+      height: 105vw;
+      max-width: 997.5px;
+      max-height: 657px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      -webkit-box-reflect: below 30px linear-gradient(transparent 40%, rgba(255, 255, 255, 0.4));
+      backface-visibility: visible;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 15px;
+    }
+
+    .screen-top .item-title {
+      font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+      font-size: 42px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 0, 0, 0.6);
+      letter-spacing: 6px;
+      margin-top: 15px;
+      z-index: 10;
+    }
+
+    .screen-top .item:nth-child(1) {
+      background-image: url('images/沉浸体验.jpg');
+      transform: rotateY(0deg) translateZ(75vw);
+    }
+    .screen-top .item:nth-child(2) {
+      background-image: url('images/典籍宝库.jpg');
+      transform: rotateY(120deg) translateZ(75vw);
+    }
+    .screen-top .item:nth-child(3) {
+      background-image: url('images/先贤春秋.jpg');
+      transform: rotateY(240deg) translateZ(75vw);
+    }
+
+    .screen-top .controls {
+      position: fixed;      /* 固定在视口左右，但只在半屏可见，不影响下半屏，没问题 */
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      display: flex;
+      justify-content: space-between;
+      padding: 0 50px;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .screen-top .control-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      pointer-events: auto;
+    }
+
+    .screen-top .control-btn:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    /* ----- 下半屏: 抽屉式轮播 (原风格适配) ----- */
+    .screen-bottom {
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* 为固定导航预留内边距, 防止内容被遮挡 (导航约70px) */
+      padding-top: 70px;      /* 与导航高度近似, 内容整体下移, 但仍能填满 */
+      box-sizing: border-box;
+    }
+
+    /* 原#main 改为下屏容器, 高度占满剩余空间 */
+    .screen-bottom #main {
+      height: 100%;
+      width: 90vw;
+      max-width: 1400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(6px);
+      border-radius: 48px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    /* 原抽屉轮播内部样式完全保留, 只需微调部分尺寸相对父容器 */
+    .screen-bottom #click-section {
+      width: 35%;
+      height: 100%;
+      padding: 20px 0;
+      position: relative;
+      background: transparent;
+    }
+
+    .screen-bottom #drawerboxes {
+      margin-left: 10%;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      background: transparent;
+    }
+
+    .screen-bottom #drawerboxes::before {
+      content: "";
+      width: 8px;
+      height: 94%;
+      position: absolute;
+      left: -10px;
+      top: 3%;
+      background: linear-gradient(to bottom, #ffb3c6, #b8c8ff);
+      border-radius: 4px;
+      box-shadow: 0 0 10px #ffb3c6;
+    }
+
+    .screen-bottom .drawerbox {
+      height: calc(100% / 5.5);
+      width: 70%;
+      position: relative;
+      z-index: 100;
+      transform: translateX(-70%);
+      transition: transform 0.5s ease-in-out;
+      background: transparent;
+    }
+
+    .screen-bottom .drawerbox.active {
+      transform: translateX(0);
+    }
+
+    .screen-bottom .drawer-btn {
+      width: 100%;
+      height: 100%;
+      font: 800 40px '楷体', 'KaiTi', serif;
+      background-color: #fafafa;
+      border: none;
+      border-radius: 40px 0 0 40px;
+      transition: background-color 0.3s, color 0.3s, background-image 0.3s;
+      color: transparent;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: left;
+      padding-left: 25px;
+    }
+
+    .screen-bottom .drawer-btn.active {
+      background-image: url('images/小图片背景.jpg');
+      background-size: cover;
+      background-position: center;
+      color: rgb(0, 0, 0);
+      text-shadow: 2px 2px 6px rgba(255,255,255,0.8);
+    }
+
+    .screen-bottom .drawer-btn:hover {
+      transform: scale(1.02);
+      filter: brightness(1.02);
+    }
+
+    .screen-bottom .drawer-head {
+      position: absolute;
+      color: rgb(0, 0, 0);
+      font-size: 200px;
+      font-weight: 900;
+      right: -38px;
+      top: calc(50% - 135px);
+      text-shadow: 2px -1px 8px rgba(250, 80, 193, 0.323);
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    .screen-bottom #slide-section {
+      position: relative;
+      height: 100%;
+      width: 65%;
+      display: flex;
+      justify-content: center;
+      padding: 0 40px;
+      background: linear-gradient(to right bottom, rgba(255,255,255,0.6), rgba(255,255,255,0.3), rgba(255,255,255,0.2));
+      backdrop-filter: blur(11px);
+      border-left: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .screen-bottom #slide-bar {
+      position: absolute;
+      top: 10%;
+      left: 40px;
+      height: 80%;
+      width: 1px;
+      background-color: rgb(223, 223, 223);
+    }
+
+    .screen-bottom #bar {
+      position: absolute;
+      height: calc(100% / 4);
+      width: 5px;
+      top: 0;
+      left: -1.2px;
+      background-color: rgb(175, 190, 255);
+      border-radius: 3px;
+      transition: transform 0.5s ease-in-out;
+      box-shadow: 0 0 12px #a0b0ff;
+    }
+
+    .screen-bottom #card-section {
+      height: 100%;
+      width: 80%;
+      overflow: hidden;
+      position: relative;
+      margin-left: 60px;
+    }
+
+    .screen-bottom .card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      padding: 12% 0 8% 0;
+      color: white;
+      font-size: 30px;
+      transition: transform 0.5s ease-in-out;
+      box-sizing: border-box;
+    }
+
+    .screen-bottom .card-small-title {
+      font-size: 30px;
+      font-weight: 600;
+      padding-bottom: min(5%, 10px);
+      color: rgb(0, 0, 0);
+      letter-spacing: 2px;
+    }
+
+    .screen-bottom .card-title {
+      font-size: 80px;
+      font-weight: 700;
+      padding-bottom: min(20%, 40px);
+      color: rgb(0, 0, 0);
+      line-height: 1.1;
+      text-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .screen-bottom .card-content {
+      font-size: 20px;
+      font-weight: 400;
+      color: rgb(0, 0, 0);
+      margin-bottom: 30px;
+      line-height: 1.6;
+      max-width: 90%;
+      background: rgba(255,255,255,0.2);
+      padding: 20px;
+      border-radius: 24px;
+      backdrop-filter: blur(4px);
+      font-family: '楷体', 'KaiTi', serif;
+    }
+
+    .screen-bottom .card-img {
+      width: 100%;
+      height: 450px;
+      overflow: hidden;
+      border-radius: 32px;
+      box-shadow: 0 20px 30px rgba(0,20,40,0.3);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .screen-bottom .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    @media (max-width: 700px) {
+      #nav li a { padding: 10px 18px; font-size: 18px; }
+      .slide1, .slide2 { height: 46px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 固定琉璃导航 (统一链接) -->
+  <ul id="nav">
+    <li class="slide1"></li>
+    <li class="slide2"></li>
+    <li><a href="index.html">首页</a></li>
+    <li><a href="先贤.html">先贤</a></li>
+    <li><a href="典籍screen01.html">典籍</a></li>
+    <li><a href="留言.html">留言</a></li>
+    <li><a href="登录.html">登录</a></li>
+  </ul>
+
+  <!-- 上半屏: 先贤3D旋转木马 -->
+  <section class="screen screen-top">
+    <div class="content">
+      <div class="item"><div class="item-title">沉浸体验</div></div>
+      <div class="item"><div class="item-title">典籍宝库</div></div>
+      <div class="item"><div class="item-title">先贤春秋</div></div>
+    </div>
+    <div class="controls">
+      <button class="control-btn" id="prevBtn">◀</button>
+      <button class="control-btn" id="nextBtn">▶</button>
+    </div>
+  </section>
+
+  <!-- 下半屏: 抽屉式轮播 (先贤介绍) -->
+  <section class="screen screen-bottom">
+    <div id="main">
+      <!-- 左侧抽屉区 (原样复制) -->
+      <div id="click-section">
+        <div id="drawerboxes">
+          <div class="drawerbox active" id="drawer-1">
+            <button class="drawer-btn active" data-slide="1">孔子<span class="drawer-head">1</span></button>
+          </div>
+          <div class="drawerbox" id="drawer-2">
+            <button class="drawer-btn" data-slide="2">孟子<span class="drawer-head">2</span></button>
+          </div>
+          <div class="drawerbox" id="drawer-3">
+            <button class="drawer-btn" data-slide="3">老子<span class="drawer-head">3</span></button>
+          </div>
+          <div class="drawerbox" id="drawer-4">
+            <button class="drawer-btn" data-slide="4">庄子<span class="drawer-head">4</span></button>
+          </div>
+        </div>
+      </div>
+      <!-- 右侧轮播卡片区 -->
+      <div id="slide-section">
+        <div id="slide-bar"><div id="bar"></div></div>
+        <div id="card-section">
+          <div class="card" id="card1">
+            <div class="card-small-title">孔子</div><div class="card-title">Confucius</div>
+            <div class="card-content">孔子，名丘，字仲尼，春秋时期鲁国陬邑人，中国古代伟大的思想家、教育家，儒家学派创始人。孔子开创了私人讲学之风，倡导仁、义、礼、智、信，被后世尊为"至圣先师"。</div>
+            <div class="card-img"><img src="images/孔子.jpg" alt="孔子"></div>
+          </div>
+          <div class="card" id="card2">
+            <div class="card-small-title">孟子</div><div class="card-title">Mencius</div>
+            <div class="card-content">孟子，名轲，字子舆，战国时期邹国人，儒家学派的重要代表人物，被尊称为"亚圣"。他继承并发展了孔子的思想，提出了"性善论"。</div>
+            <div class="card-img"><img src="images/孟子.jpg" alt="孟子"></div>
+          </div>
+          <div class="card" id="card3">
+            <div class="card-small-title">老子</div><div class="card-title">Laozi</div>
+            <div class="card-content">老子，姓李名耳，字聃，春秋时期楚国苦县人，中国古代伟大的哲学家和思想家，道家学派创始人。留下千古名著《道德经》。</div>
+            <div class="card-img"><img src="images/老子.jpg" alt="老子"></div>
+          </div>
+          <div class="card" id="card4">
+            <div class="card-small-title">庄子</div><div class="card-title">Zhuangzi</div>
+            <div class="card-content">庄子，名周，字子休，战国时期宋国蒙人，道家学派的杰出代表，与老子并称"老庄"。创造了一个奇妙瑰丽的哲学世界。</div>
+            <div class="card-img"><img src="images/庄子.jpg" alt="庄子"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function() {
+      // ---------- 上半屏: 3D旋转木马 (原封不动, 仅调整变量冲突) ----------
+      let currentRotation = 0;
+      const content = document.querySelector('.screen-top .content');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const totalItems = 3;
+      let isDragging = false;
+      let startX = 0, lastX = 0;
+
+      function rotateCarousel(angle) {
+        currentRotation = angle;
+        if (content) content.style.transform = `translateZ(-75vw) rotateY(${currentRotation}deg)`;
+      }
+      function rotateNext() { rotateCarousel(currentRotation - 120); }
+      function rotatePrev() { rotateCarousel(currentRotation + 120); }
+
+      if (nextBtn) nextBtn.addEventListener('click', rotateNext);
+      if (prevBtn) prevBtn.addEventListener('click', rotatePrev);
+
+      // 拖拽 (排除导航区域)
+      function isInsideNav(target) { return target.closest && target.closest('#nav') !== null; }
+
+      document.addEventListener('mousedown', (e) => {
+        if (isInsideNav(e.target) || !content) return;
+        isDragging = true;
+        startX = e.clientX; lastX = e.clientX;
+        content.style.transition = 'none';
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !content) return;
+        const deltaX = e.clientX - lastX;
+        rotateCarousel(currentRotation + deltaX * 0.3);
+        lastX = e.clientX;
+      });
+      document.addEventListener('mouseup', (e) => {
+        if (!isDragging || !content) return;
+        isDragging = false;
+        content.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        const deltaX = e.clientX - startX;
+        if (deltaX > 50) rotatePrev();
+        else if (deltaX < -50) rotateNext();
+        else rotateCarousel(Math.round(currentRotation / 120) * 120);
+      });
+      document.addEventListener('mouseleave', () => {
+        if (isDragging && content) {
+          isDragging = false;
+          content.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          rotateCarousel(Math.round(currentRotation / 120) * 120);
+        }
+      });
+      // 触摸事件略 (保留原逻辑, 同理)
+      document.addEventListener('touchstart', (e) => {
+        if (isInsideNav(e.target) || !content) return;
+        isDragging = true;
+        startX = e.touches[0].clientX; lastX = e.touches[0].clientX;
+        content.style.transition = 'none';
+      });
+      document.addEventListener('touchmove', (e) => {
+        if (!isDragging || !content) return;
+        const deltaX = e.touches[0].clientX - lastX;
+        rotateCarousel(currentRotation + deltaX * 0.3);
+        lastX = e.touches[0].clientX;
+      });
+      document.addEventListener('touchend', (e) => {
+        if (!isDragging || !content) return;
+        isDragging = false;
+        content.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        const deltaX = e.changedTouches[0].clientX - startX;
+        if (deltaX > 50) rotatePrev();
+        else if (deltaX < -50) rotateNext();
+        else rotateCarousel(Math.round(currentRotation / 120) * 120);
+      });
+
+      // ---------- 下半屏: 抽屉轮播 (原逻辑, 变量重命名防止干扰) ----------
+      (function() {
+        let chosenSlideNumber = 1;
+        let offset = 0;
+        let barOffset = 0;
+        let intervalId = null;
+
+        const drawerboxes = document.querySelectorAll('.screen-bottom .drawerbox');
+        const drawerBtns = document.querySelectorAll('.screen-bottom .drawer-btn');
+        const cards = document.querySelectorAll('.screen-bottom .card');
+        const bar = document.querySelector('.screen-bottom #bar');
+        const slideSection = document.querySelector('.screen-bottom #slide-section');
+
+        function setDrawerBoxActive(slideNumber) {
+          drawerboxes.forEach(box => box.classList.remove('active'));
+          const target = document.querySelector(`.screen-bottom .drawerbox:nth-child(${slideNumber})`);
+          if (target) target.classList.add('active');
+        }
+        function setDrawerBtnActive(slideNumber) {
+          drawerBtns.forEach(btn => btn.classList.remove('active'));
+          const target = document.querySelector(`.screen-bottom .drawer-btn[data-slide="${slideNumber}"]`);
+          if (target) target.classList.add('active');
+        }
+        function moveBar(percent) { if (bar) bar.style.transform = `translateY(${percent}%)`; }
+
+        function slideTo(slideNumber) {
+          if (slideNumber === chosenSlideNumber) return;
+          const prev = chosenSlideNumber;
+          chosenSlideNumber = slideNumber;
+          offset += (chosenSlideNumber - prev) * (-100);
+          barOffset += (chosenSlideNumber - prev) * 100;
+          if (offset > 0) offset = 0; if (offset < -300) offset = -300;
+          if (barOffset < 0) barOffset = 0; if (barOffset > 300) barOffset = 300;
+
+          setDrawerBoxActive(slideNumber);
+          setDrawerBtnActive(slideNumber);
+          moveBar(barOffset);
+          cards.forEach(card => card.style.transform = `translateY(${offset}%)`);
+        }
+
+        function startSlide() {
+          if (intervalId) clearInterval(intervalId);
+          intervalId = setInterval(() => { slideTo((chosenSlideNumber % 4) + 1); }, 3000);
+        }
+        function restartInterval() { clearInterval(intervalId); startSlide(); }
+
+        drawerBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const slide = parseInt(btn.getAttribute('data-slide'), 10);
+            if (!isNaN(slide) && slide !== chosenSlideNumber) slideTo(slide);
+            restartInterval();
+          });
+        });
+
+        if (slideSection) {
+          slideSection.addEventListener('mouseenter', () => { clearInterval(intervalId); intervalId = null; });
+          slideSection.addEventListener('mouseleave', () => { startSlide(); });
+        }
+
+        // 初始化
+        chosenSlideNumber = 1; offset = 0; barOffset = 0;
+        setDrawerBoxActive(1); setDrawerBtnActive(1); moveBar(0);
+        cards.forEach(card => card.style.transform = `translateY(0%)`);
+        startSlide();
+      })();
+
+      // ---------- 琉璃导航: 滑动滑块 + 允许页面跳转 ----------
+      $(function() {
+        var $nav = $('#nav');
+        var $slide1 = $nav.find('.slide1');
+        var $slide2 = $nav.find('.slide2');
+
+        function placeSlider($slider, $targetLi) {
+          if (!$targetLi.length) return;
+          var pos = $targetLi.position();
+          var w = $targetLi.width();
+          $slider.css({ left: pos.left, width: w, top: pos.top });
+        }
+
+        // 高亮“先贤”
+        var $xianxianLi = $nav.find('li a:contains("先贤")').parent();
+        if ($xianxianLi.length) placeSlider($slide1, $xianxianLi);
+
+        // 点击移动滑块并允许跳转
+        $nav.find('a').on('click', function(e) {
+          var $parentLi = $(this).parent();
+          placeSlider($slide1, $parentLi);
+          // 不阻止默认，让href跳转
+        });
+
+        // 悬停效果
+        $nav.find('a').on('mouseenter', function() {
+          var $parentLi = $(this).parent();
+          placeSlider($slide2, $parentLi);
+          $slide2.css({ opacity: 1 }).addClass('squeeze');
+        }).on('mouseleave', function() {
+          $slide2.css({ opacity: 0 }).removeClass('squeeze');
+        });
+
+        $(window).on('resize', function() {
+          var $xianxianLi = $nav.find('li a:contains("先贤")').parent();
+          if ($xianxianLi.length) placeSlider($slide1, $xianxianLi);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

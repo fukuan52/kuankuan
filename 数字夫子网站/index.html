@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="数字夫子 – 以AI技术复活先贤，让典籍智慧可触可问。">
+    <title>数字夫子 · 首页</title>
+    <!-- 引入jQuery (用于导航滑块) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+        /* ===== index.css 全部内嵌 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100vw;
+            height: auto;
+        }
+
+        section,
+        #footer {
+            height: 100vh;
+            position: relative;
+            color: rgba(255, 255, 255, .8);
+            font-size: 10vh;
+            /* 设置字体 */
+            font-family: 'modern_no._20regular',
+                serif;
+            /* 文字阴影 */
+            text-shadow: 4px 4px rgb(46, 43, 43);
+            /* 弹性布局 */
+            display: flex;
+            /* 水平居中 */
+            justify-content: center;
+            /* 垂直居中 */
+            align-items: center;
+        }
+
+        .kai-text {
+            font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+        }
+
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .welcome-container .welcome {
+            font-size: 6vh;
+            font-weight: normal;
+            letter-spacing: 0.2em;
+            text-align: center;
+        }
+
+        .welcome-container .title {
+            font-size: 12vh;
+            font-weight: bold;
+            letter-spacing: 0.3em;
+            text-align: center;
+            font-family: 'SimHei', '黑体', 'Microsoft YaHei', sans-serif;
+        }
+
+        .thoughts-content {
+            max-width: 80%;
+            margin: 0 auto;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .thoughts-content p {
+            font-size: 3vh;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            font-family: 'SimSun', 'STSong', '宋体', serif;
+        }
+
+        #footer {
+            background-color: #c0b5aa;
+            height: 50vh;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .footer-gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            height: 66.67%;
+        }
+
+        .gallery-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            height: 100%;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .img {
+            overflow: hidden;
+            /* 背景图片不重复 */
+            background-repeat: no-repeat;
+            /* 背景图片位置：居中 */
+            background-position: center;
+            /* 背景图片固定 */
+            background-attachment: fixed;
+            background-size: cover;
+            /* 禁止用户误选中 */
+            user-select: none;
+
+        }
+
+
+        #img-one {
+            background-image: url(./images/img2.jpg);
+            background-size: cover;
+        }
+
+        #img-two {
+            background-image: url(./images/img4.jpg);
+        }
+
+        .content-one {
+            background: url(./images/img1.jpg) no-repeat fixed center;
+            background-size: cover;
+        }
+
+        .content-two {
+            background: url(./images/img2.jpg) no-repeat fixed center;
+            background-size: cover;
+        }
+
+        .content-three {
+            background: url(./images/img3.jpg) no-repeat fixed center;
+            background-size: cover;
+        }
+
+        .text-box {
+            width: 100%;
+            height: 50%;
+            /* 绝对定位 */
+            position: absolute;
+            bottom: 25%;
+            /* 文字居中 */
+            text-align: center;
+            background-color: rgba(0, 0, 0, .3);
+            /* 旋转中心 */
+            transform-origin: center bottom;
+            /* 扭曲斜切 */
+            transform: skew(0, -8deg);
+
+        }
+
+        .text-box .cnt {
+            display: inline-block;
+            text-align: right;
+            margin: 40px 0 10px;
+            width: 90%;
+            max-width: 990px;
+            transform-origin: right bottom;
+            transform: skew(0, 8deg);
+        }
+
+        .cnt h2 {
+            margin-top: 100px;
+            font-size: 4vh;
+            font-family: 'SimHei', '黑体', 'Microsoft YaHei', sans-serif;
+            text-shadow: 1px 0px 0px #323232;
+            letter-spacing: 0.2em;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .cnt p {
+            font-size: 2vh;
+            line-height: 1.7;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .cnt a.btn {
+            font-size: 90%;
+            font-family: 'modern_no._20regular',
+                serif;
+            letter-spacing: 0.3em;
+            text-shadow: 1px 0px 0px black;
+            line-height: 2.8;
+            display: inline-block;
+            background-color: #eaeaea;
+            color: #000;
+            border: 3px solid #000;
+            white-space: nowrap;
+            text-decoration: none;
+            padding: 0 20px;
+
+        }
+
+        /* ===== 固定顶部琉璃导航 (与登录.html完全一致) ===== */
+        #nav {
+            position: fixed;
+            top: 16px;
+            left: 20px;
+            right: 20px;
+            margin: 0 auto;
+            padding: 8px 25px;
+            background: rgba(255, 248, 240, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 48px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+            display: flex;
+            list-style: none;
+            z-index: 999;
+            justify-content: flex-start;
+            align-items: center;
+            transition: background 0.3s;
+            box-sizing: border-box;
+        }
+
+        #nav li a {
+            position: relative;
+            padding: 12px 28px;
+            font: 500 22px '楷体', 'KaiTi', '优设标题黑', sans-serif;
+            border: none;
+            outline: none;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            text-decoration: none;
+            z-index: 3;
+            white-space: nowrap;
+            transition: color 0.2s;
+            letter-spacing: 2px;
+        }
+
+        #nav li a:hover {
+            color: #fff8e7;
+            text-shadow: 0 0 12px #ffffffcc;
+        }
+
+        /* 两个滑动背景块 */
+        .slide1, .slide2 {
+            position: absolute;
+            display: inline-block;
+            height: 52px;
+            border-radius: 40px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1.05);
+            pointer-events: none;
+        }
+
+        .slide1 {
+            background: rgba(230, 210, 180, 0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .slide2 {
+            opacity: 0;
+            background: rgba(245, 235, 210, 0.4);
+            box-shadow: 0 0 25px rgba(255, 250, 240, 0.8) inset;
+            z-index: 1;
+            transition: opacity 0.3s, left 0.5s, width 0.5s, transform 0.3s;
+        }
+
+        .squeeze {
+            transform: scale(0.92);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 700px) {
+            #nav li a { padding: 10px 18px; font-size: 18px; }
+            .slide1, .slide2 { height: 46px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== 琉璃导航栏 (高亮“首页”，与其他页面完全一致) ===== -->
+    <ul id="nav">
+        <li class="slide1"></li>
+        <li class="slide2"></li>
+        <li><a href="index.html">首页</a></li>
+        <li><a href="先贤.html">先贤</a></li>
+        <li><a href="典籍screen01.html">典籍</a></li>
+        <li><a href="留言.html">留言</a></li>
+        <li><a href="登录.html">登录</a></li>
+    </ul>
+
+    <div class="container">
+        <!-- 第一屏：欢迎语 -->
+        <section id="img-one" class="img">
+            <div class="welcome-container">
+                <h1 class="kai-text welcome">welcome to</h1>
+                <h1 class="kai-text title">数字夫子</h1>
+            </div>
+        </section>
+
+        <!-- 第二屏：项目核心概念 -->
+        <section class="content-one">
+            <div class="text-box">
+                <div class="cnt">
+                <h2>项目核心概念与技术实现</h2>
+                <p>
+                    本项目以"AI化身数字夫子"为核心创意，运用大语言模型、知识图谱和虚拟人技术，将孔子、老子等历史先贤"复活"为高度拟人化的AI数字分身。通过构建专为古籍优化的垂直领域大模型和权威结构化知识库，为用户提供与"数字夫子"进行实时、深度、情境化对话的沉浸式体验，彻底打破了时空界限，让传统典籍与古代智慧变得可触可问。
+                </p>
+                <p>
+                    <a href="#" class="btn">TAKE <strong>CARE OF</strong><em>YOURSEFL</em></a>
+                </p>
+            </div>
+            </div>
+        </section>
+
+        <!-- 第三屏：市场定位与用户价值 -->
+        <section class="content-two">
+            <div class="text-box">
+                <div class="cnt">
+                <h2>市场定位与用户价值</h2>
+                <p>
+                    项目精准切入"AI+文化"的蓝海市场，服务于K12学生、高校研究者、国学爱好者等多元群体。有效解决了传统典籍"艰深难懂"的痛点，将单向的知识灌输转变为双向的互动探索。无论是学生的趣味启蒙还是大众的文化修养提升，平台都能通过趣味化问答、场景化模拟和精准化工具，满足不同用户对经典文化的学习与体验需求。
+                </p>
+                <p>
+                    <a href="#" class="btn">BEST <strong>WISHS</strong><em>FOR YOU</em></a>
+                </p>
+            </div>
+            </div>
+        </section>
+
+        <!-- 第四屏：商业模式与发展战略 -->
+        <section class="content-three">
+            <div class="text-box">
+                <div class="cnt">
+                <h2>商业模式与发展战略</h2>
+                <p>
+                    项目构建了多元化的盈利模式，包括C端会员订阅、单次付费、B端教育/文旅解决方案以及IP衍生授权，兼具规模经济与范围经济特征。发展战略采取"精品示范、由点及面"的稳健路径：初期聚焦区域市场打造标杆案例，中期扩展典籍库并深化AI能力，后期构建覆盖教育、文旅、出版的文化数字生态，实现从区域深耕到全国引领的跨越。
+                </p>
+                <p>
+                    <a href="#" class="btn">TAKE <strong>CARE OF</strong><em>YOURSEFL</em></a>
+                </p>
+            </div>
+            </div>
+        </section>
+
+        <!-- 第五屏：经典引文 / 先贤智慧 (与前面内容呼应，增强整体感) -->
+        <section id="img-two" class="img">
+            <div class="thoughts-content">
+                <p>项目团队由汉语言文学、计算机科学与技术、财务管理等多学科背景的成员组成，形成了“文化挖掘+技术落地+商业管理”的全链条闭环能力。该项目不仅具有革新文化传承方式、增强民族文化自信的社会价值，也为用户提供了前所未有的国学学习体验，同时作为新兴赛道的开拓者，有望为投资者带来丰厚的财务回报与品牌价值。</p>
+            </div>
+        </section>
+
+        <!-- 页脚画廊：展示先贤/典籍意象 -->
+        <section id="footer">
+            <div class="footer-gallery">
+                <div class="gallery-item">
+                    <img src="./images/首页1.png" alt="首页图片1">
+                </div>
+                <div class="gallery-item">
+                    <img src="./images/首页2.png" alt="首页图片2">
+                </div>
+                <div class="gallery-item">
+                    <img src="./images/首页3.png" alt="首页图片3">
+                </div>
+                <div class="gallery-item">
+                    <img src="./images/首页4.png" alt="首页图片4">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ===== 导航交互脚本 (高亮“首页”) ===== -->
+    <script>
+        $(function() {
+            var $nav = $('#nav');
+            var $slide1 = $nav.find('.slide1');
+            var $slide2 = $nav.find('.slide2');
+
+            function placeSlider($slider, $targetLi) {
+                if (!$targetLi.length) return;
+                var pos = $targetLi.position();
+                var w = $targetLi.width();
+                $slider.css({ left: pos.left, width: w, top: pos.top });
+            }
+
+            // 高亮当前页：“首页”
+            var $homeLi = $nav.find('li a:contains("首页")').parent();
+            if ($homeLi.length) placeSlider($slide1, $homeLi);
+
+            // 点击移动滑块，允许默认跳转
+            $nav.find('a').on('click', function(e) {
+                var $parentLi = $(this).parent();
+                placeSlider($slide1, $parentLi);
+                // 不阻止默认行为，让href正常跳转
+            });
+
+            // 悬停效果
+            $nav.find('a').on('mouseenter', function() {
+                var $parentLi = $(this).parent();
+                placeSlider($slide2, $parentLi);
+                $slide2.css({ opacity: 1 }).addClass('squeeze');
+            }).on('mouseleave', function() {
+                $slide2.css({ opacity: 0 }).removeClass('squeeze');
+            });
+
+            // 窗口大小变化时，重新固定高亮位置（首页）
+            $(window).on('resize', function() {
+                var $homeLi = $nav.find('li a:contains("首页")').parent();
+                if ($homeLi.length) placeSlider($slide1, $homeLi);
+            });
+        });
+    </script>
+</body>
+</html>

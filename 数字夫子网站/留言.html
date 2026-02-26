@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>琉璃 · 留言 · 双屏合璧</title>
+  <style>
+    /* ========== 全局重置 & 共用基础 ========== */
+    * {
+      padding: 0;
+      margin: 0;
+      color: #fff;               /* 通白，具体元素会覆盖 */
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', '微软雅黑', '楷体', system-ui, sans-serif;
+      background: #f0f2f5;       /* 后备色，两个屏各自覆盖背景 */
+      min-width: 320px;
+    }
+
+    /* ===== 固定顶部琉璃导航 (z-index 始终最高) ===== */
+    #nav {
+        position: fixed;
+        top: 16px;
+        left: 20px;
+        right: 20px;
+        margin: 0 auto;
+        padding: 8px 25px;
+        background: rgba(255, 248, 240, 0.2);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 48px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+        display: flex;
+        list-style: none;
+        z-index: 999;
+        justify-content: flex-start;
+        align-items: center;
+        transition: background 0.3s;
+        box-sizing: border-box;
+    }
+
+    #nav li a {
+        position: relative;
+        padding: 12px 28px;
+        font: 500 22px '楷体', 'KaiTi', '优设标题黑', sans-serif;
+        border: none;
+        outline: none;
+        color: white;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        display: inline-block;
+        text-decoration: none;
+        z-index: 3;
+        white-space: nowrap;
+        transition: color 0.2s;
+        letter-spacing: 2px;
+    }
+
+    #nav li a:hover {
+        color: #fff8e7;
+        text-shadow: 0 0 12px #ffffffcc;
+    }
+
+    .slide1, .slide2 {
+        position: absolute;
+        display: inline-block;
+        height: 52px;
+        border-radius: 40px;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1.05);
+        pointer-events: none;
+    }
+
+    .slide1 {
+        background: rgba(230, 210, 180, 0.5);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 2;
+    }
+
+    .slide2 {
+        opacity: 0;
+        background: rgba(245, 235, 210, 0.4);
+        box-shadow: 0 0 25px rgba(255, 250, 240, 0.8) inset;
+        z-index: 1;
+        transition: opacity 0.3s, left 0.5s, width 0.5s, transform 0.3s;
+    }
+
+    .squeeze {
+        transform: scale(0.92);
+    }
+
+    @media (max-width: 700px) {
+        #nav li a { padding: 10px 18px; font-size: 18px; }
+        .slide1, .slide2 { height: 46px; }
+    }
+
+    /* ===== 第一屏 · 琉璃卡片区 (原留言screen01.html主体) ===== */
+    .screen1 {
+      /* 原 body 背景 + 内边距实现滚动驱动动画 */
+      background: url('images/背景.png') no-repeat center center fixed;
+      background-size: cover;
+      padding: 100px 0 50px 0;  /* 减少顶部和底部留白 */
+      width: 100%;
+      min-height: 100vh;  /* 确保至少占满一屏 */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* 原卡片网格容器 */
+    .cards {
+      display: grid;
+      gap: 2rem;
+      grid-auto-flow: dense;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      max-width: 1400px;
+      width: 90vw;
+      margin: 0 auto;
+    }
+
+    @keyframes slide-fade-in {
+      from {
+        opacity: 0;
+        box-shadow: none;
+        transform: scale(0.8) translateY(15vh);
+      }
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: slide-fade-in both;
+      animation-timeline: view();
+      animation-range: contain 0% contain 50%;
+      border-radius: 10px;
+      line-height: 6;
+      box-shadow: 0px 8px 20px #00000022;
+      font-size: 32px;
+      letter-spacing: 5px;
+      color: white;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-image: linear-gradient(135deg, #d9a17e, #d9a17e);
+      min-height: 200px;
+      transition: box-shadow 0.2s ease;
+      position: relative;
+    }
+    .card img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+    .card:hover {
+      box-shadow: 0px 18px 30px #d9a17e;
+      transform: scale(1.01);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:nth-of-type(4n) { grid-column: span 2; }
+    .card:nth-of-type(5n) { grid-column: span 2; }
+    .card:nth-of-type(7n) { grid-row: span 2; }
+    .card::before {
+      content: "🐐";
+      font-size: 0.9em;
+      margin-right: 8px;
+      opacity: 0.8;
+      filter: drop-shadow(0 2px 2px #00000033);
+    }
+
+    .miao-title {
+      text-align: center;
+      font-size: clamp(3rem, 15vw, 5rem);
+      font-weight: 800;
+      letter-spacing: 8px;
+      color: #000000;
+      text-shadow: 4px 4px 0 #f4eef400, 8px 8px 0 rgba(60, 54, 60, 0.2);
+      margin-block-end: 2rem;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      transform: rotate(-1deg);
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-block-start: 2rem;
+      color: #101010;
+      font-size: 1.1rem;
+      opacity: 0.7;
+      letter-spacing: 2px;
+    }
+
+    /* ===== 第二屏 · 留言板 (原留言板.html主体) ===== */
+    .screen2 {
+      min-height: 100vh;           /* 至少占满一屏 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('images/背景.png') no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px 0;             /* 减少呼吸空间，与footer-note更近 */
+    }
+
+    /* 留言板卡片容器 — 从原 .messages 完全复制，仅去掉 margin-top 让flex垂直居中 */
+    .messages {
+      width: 900px;
+      padding: 38px 75px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background-color: rgba(255, 255, 255, 0.43);
+      border-radius: 15px;
+      box-shadow: 0 8px 23px #00000020;
+      backdrop-filter: blur(2px);
+      margin: 0;                    /* 覆盖原 margin-top:75px，由flex居中 */
+    }
+
+    /* 留言板内部样式（原封不动） */
+    .form {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      flex-direction: column;
+      width: 100%;
+      padding-bottom: 42px;
+    }
+
+    input, textarea {
+      border: none;
+      color: #000;
+      margin-bottom: 24px;
+      font: 900 24px 'Segoe UI', '微软雅黑', sans-serif;
+      border-radius: 6px;
+      padding: 18px;
+      width: 100%;
+      background-color: #fff;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 1.8px rgba(142, 197, 252, 0.5);
+    }
+
+    textarea {
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #aaa;
+      font-weight: 400;
+      font-size: 0.8em;
+    }
+
+    #username { height: 54px; }
+    #message { height: 120px; }
+
+    .messages h1 {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 53px;
+      font-size: 105px;
+      background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 7.5px;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+
+    #submitBtn {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      background-image: linear-gradient(90deg, #e0c3fc 0%, #8ec5fc 100%);
+      border: none;
+      font-size: 18px;
+      width: 120px;
+      height: 42px;
+      border-radius: 30px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 3px 9px rgba(0,0,0,0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #submitBtn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    #submitBtn:active { transform: scale(0.98); }
+
+    #messageBoard { width: 100%; text-align: left; }
+
+    .message {
+      width: 100%;
+      margin: 42px 0;
+      padding: 6px;
+      opacity: 0;
+      animation: messageFadeIn 0.5s ease forwards;
+      background-image: linear-gradient(90deg, #8ec5fc 0%, #8ec3fc 100%);
+      background-color: #fff;
+      border-radius: 6px;
+      box-shadow: 0 6px 12px #00000026;
+      text-shadow: 0px 0px 12px #ffffff;
+    }
+
+    @keyframes messageFadeIn { to { opacity: 1; } }
+
+    .message-info {
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 21.6px;
+      position: relative;
+    }
+
+    .info { transform: translateY(-18px); }
+    .info img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 6px #fff solid;
+      background-color: #eee;
+      object-fit: cover;
+    }
+
+    strong {
+      position: absolute;
+      width: 480px;
+      letter-spacing: 1.8px;
+      top: 42px;
+      left: 102px;
+      font-size: 24px;
+      color: #2d3748;
+      text-shadow: none;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .message-info span {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 16.8px;
+      color: #4a5568;
+      background: rgba(255,255,255,0.5);
+      padding: 3px 9px;
+      border-radius: 24px;
+      backdrop-filter: blur(2.4px);
+      box-shadow: 0 1.2px 4.8px rgba(0,0,0,0.1);
+    }
+
+    .content {
+      font-size: 21.6px;
+      margin: 18px;
+      width: 95%;
+      word-break: break-word;
+      color: #1a202c;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* 小调整：确保两屏之间无缝隙 */
+    .screen1, .screen2 {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 固定导航栏（统一链接） ===== -->
+  <ul id="nav">
+    <li class="slide1"></li>
+    <li class="slide2"></li>
+    <li><a href="index.html">首页</a></li>
+    <li><a href="先贤.html">先贤</a></li>
+    <li><a href="典籍screen01.html">典籍</a></li>
+    <li><a href="留言.html">留言</a></li>
+    <li><a href="登录.html">登录</a></li>
+  </ul>
+
+  <!-- ===== 第一屏 · 琉璃卡片 (原留言screen01.html内容) ===== -->
+  <div class="screen1">
+    <h1 class="miao-title">感谢！</h1>
+    <div class="cards">
+      <div class="card">TEXT 1</div><div class="card">TEXT 2</div><div class="card">TEXT 3</div>
+      <div class="card">TEXT 4</div><div class="card">TEXT 5</div><div class="card">TEXT 6</div>
+      <div class="card">TEXT 7</div><div class="card">TEXT 8</div><div class="card">TEXT 9</div>
+      <div class="card">TEXT 10</div><div class="card">TEXT 11</div><div class="card">TEXT 12</div>
+      <div class="card">TEXT 13</div><div class="card">TEXT 14</div><div class="card">TEXT 15</div>
+      <div class="card">TEXT 16</div><div class="card">TEXT 17</div><div class="card">TEXT 18</div>
+      <div class="card">TEXT 19</div><div class="card">TEXT 20</div><div class="card">TEXT 21</div>
+    </div>
+    <div class="footer-note">fmk · 滚动即视 · 动画驱动</div>
+  </div>
+
+  <!-- ===== 第二屏 · 留言板 (原留言板.html内容, 添加id用于锚点滚动) ===== -->
+  <div class="screen2" id="message-section">
+    <div class="messages">
+      <h1>留言板</h1>
+      <div class="form">
+        <input type="text" id="username" placeholder="用户名（留空则为匿名）">
+        <textarea id="message" placeholder="留言内容"></textarea>
+        <button id="submitBtn">留言</button>
+      </div>
+      <div id="messageBoard">
+        <!-- 静态示例留言 -->
+        <div class="message">
+          <div class="message-info">
+            <div class="info">
+              <img src="images/头像.jpg" alt="avatar" width="90" height="90">
+              <strong>fmk</strong>
+            </div>
+            <span>发布于：2026/2/25 08:00:00</span>
+          </div>
+          <div class="content">你好</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery (用于导航滑动效果) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <!-- 导航交互脚本 (融合滚动至留言板) -->
+  <script>
+    $(function() {
+      var $nav = $('#nav');
+      var $slide1 = $nav.find('.slide1');
+      var $slide2 = $nav.find('.slide2');
+
+      function placeSlider($slider, $targetLi) {
+        if (!$targetLi.length) return;
+        var pos = $targetLi.position();
+        var w = $targetLi.width();
+        $slider.css({ left: pos.left, width: w, top: pos.top });
+      }
+
+      // 高亮“留言”
+      var $messageLi = $nav.find('li a:contains("留言")').parent();
+      if ($messageLi.length) placeSlider($slide1, $messageLi);
+
+      // 点击移动滑块并允许跳转
+      $nav.find('a').on('click', function(e) {
+        var $parentLi = $(this).parent();
+        placeSlider($slide1, $parentLi);
+        // 不阻止默认，让href跳转
+      });
+
+      // 悬停效果
+      $nav.find('a').on('mouseenter', function() {
+        var $parentLi = $(this).parent();
+        placeSlider($slide2, $parentLi);
+        $slide2.css({ opacity: 1 }).addClass('squeeze');
+      }).on('mouseleave', function() {
+        $slide2.css({ opacity: 0 }).removeClass('squeeze');
+      });
+
+      $(window).on('resize', function() {
+        var $messageLi = $nav.find('li a:contains("留言")').parent();
+        if ($messageLi.length) placeSlider($slide1, $messageLi);
+      });
+    });
+  </script>
+
+  <!-- 留言板功能脚本 (原留言板.html中的JavaScript，独立运行) -->
+  <script>
+    // 获取当前时间的格式化函数 (格式: YYYY/MM/DD hh:mm:ss)
+    function getCurrentTime() {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = ('0' + (now.getMonth() + 1)).slice(-2);
+      var day = ('0' + now.getDate()).slice(-2);
+      var hours = ('0' + now.getHours()).slice(-2);
+      var minutes = ('0' + now.getMinutes()).slice(-2);
+      var seconds = ('0' + now.getSeconds()).slice(-2);
+      return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+    }
+
+    // 绑定发布按钮事件
+    document.getElementById('submitBtn').addEventListener('click', function() {
+      var username = document.getElementById('username').value.trim();
+      var message = document.getElementById('message').value.trim();
+
+      if (message === '') {
+        alert('请输入内容');
+        return;
+      }
+
+      if (username === '') {
+        username = '匿名';
+      }
+
+      var messageBoard = document.getElementById('messageBoard');
+      var newMessage = document.createElement('div');
+      newMessage.classList.add('message');
+
+      newMessage.innerHTML = '<div class="message-info">' +
+        '<div class="info">' +
+        '<img src="images/头像.jpg" alt="avatar">' +
+        '<strong>' + username + '</strong>' +
+        '</div>' +
+        '<span>发布于：' + getCurrentTime() + '</span>' +
+        '</div>' +
+        '<div class="content">' + message + '</div>';
+
+      // 插入到留言板最上方 (最新在上)
+      messageBoard.insertBefore(newMessage, messageBoard.firstChild);
+
+      // 清空输入框
+      document.getElementById('username').value = '';
+      document.getElementById('message').value = '';
+    });
+  </script>
+
+  <!-- 随机插入图片到卡片的脚本 -->
+  <script>
+    // 图片路径数组
+    const images = [
+      'images/主页面背景.jpg',
+      'images/先贤春秋.jpg',
+      'images/典籍宝库.jpg',
+      'images/史记.jpg',
+      'images/周易.jpg',
+      'images/天工开物.jpg',
+      'images/img1.jpg',
+      'images/img2.jpg',
+      'images/img3.jpg',
+      'images/img4.jpg',
+      'images/孔子.jpg',
+      'images/孟子.jpg',
+      'images/小图片背景.jpg',
+      'images/庄子.jpg',
+      'images/徐霞客游记.jpg',
+      'images/本草纲目.jpg',
+      'images/沉浸体验.jpg',
+      'images/老子.jpg',
+      'images/论语.jpg',
+      'images/首页1.png',
+      'images/首页2.png',
+      'images/首页3.png',
+      'images/首页4.png',
+      'images/首页5.png'
+    ];
+
+    // 随机打乱数组
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.card');
+      const shuffledImages = shuffleArray([...images]);
+
+      cards.forEach((card, index) => {
+        if (index < shuffledImages.length) {
+          // 清空卡片内容
+          card.innerHTML = '';
+          // 创建图片元素
+          const img = document.createElement('img');
+          img.src = shuffledImages[index];
+          img.alt = `Image ${index + 1}`;
+          // 添加图片到卡片
+          card.appendChild(img);
+        }
+      });
+    });
+  </script>
+
+  <!-- 注：图片路径保留原样 (./头像.jpg 及 images/背景.png)，请确保资源存在或替换为占位图 -->
+</body>
+</html>
