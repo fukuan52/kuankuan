@@ -445,16 +445,16 @@
                 const coverImage = bookCovers[idx % bookCovers.length];
                 
                 if (front) {
-                    front.style.background = `url('images/${coverImage}') no-repeat center center`;
+                    front.style.background = `url('/kuankuan/images/${coverImage}') no-repeat center center`;
                     front.style.backgroundSize = 'cover';
                 }
                 if (left) {
-                    left.style.background = `url('images/${coverImage}') no-repeat center center`;
+                    left.style.background = `url('/kuankuan/images/${coverImage}') no-repeat center center`;
                     left.style.backgroundSize = 'cover';
                     left.style.filter = 'brightness(0.7) saturate(1.2)';
                 }
                 if (right) {
-                    right.style.background = `url('images/${coverImage}') no-repeat center center`;
+                    right.style.background = `url('/kuankuan/images/${coverImage}') no-repeat center center`;
                     right.style.backgroundSize = 'cover';
                 }
             });
