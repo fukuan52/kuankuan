@@ -1,0 +1,109 @@
+/**app.wxss**/
+@import './styles/fonts.wxss';
+
+page {
+  background: linear-gradient(135deg, #1c1917 0%, #78350f 50%, #1c1917 100%);
+  font-family: "Songti SC", "SimSun", serif;
+  min-height: 100vh;
+}
+
+/* 全局样式 */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1c1917 0%, #78350f 50%, #1c1917 100%);
+}
+
+/* 背景纹理 */
+.bg-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 通用卡片样式 */
+.card {
+  background: linear-gradient(135deg, rgba(41, 37, 36, 0.8) 0%, rgba(28, 25, 23, 0.8) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(180, 83, 9, 0.2);
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.card-hover:active {
+  border-color: rgba(180, 83, 9, 0.4);
+  transform: scale(0.98);
+}
+
+/* 渐变文字 */
+.text-gradient {
+  background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 按钮样式 */
+.btn-primary {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #ffffff;
+  border-radius: 32rpx;
+  padding: 24rpx 48rpx;
+  border: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:active {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+
+/* 输入框样式 */
+.input-box {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  border-radius: 32rpx;
+  padding: 24rpx 32rpx;
+}
+
+.input-box:focus-within {
+  border-color: rgba(217, 119, 6, 0.5);
+}
+
+/* 加载动画 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  color: #78716c;
+}
+
+/* 通用间距 */
+.mt-sm { margin-top: 16rpx; }
+.mt-md { margin-top: 32rpx; }
+.mt-lg { margin-top: 48rpx; }
+.mb-sm { margin-bottom: 16rpx; }
+.mb-md { margin-bottom: 32rpx; }
+.mb-lg { margin-bottom: 48rpx; }
+.px-sm { padding-left: 16rpx; padding-right: 16rpx; }
+.px-md { padding-left: 32rpx; padding-right: 32rpx; }
+.px-lg { padding-left: 48rpx; padding-right: 48rpx; }
+.py-sm { padding-top: 16rpx; padding-bottom: 16rpx; }
+.py-md { padding-top: 32rpx; padding-bottom: 32rpx; }
+.py-lg { padding-top: 48rpx; padding-bottom: 48rpx; }

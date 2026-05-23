@@ -1,0 +1,98 @@
+{
+  "cloud": true,
+  "pages": [
+    "pages/login/login",
+    "pages/home/home",
+    "pages/library/library",
+    "pages/category/category",
+    "pages/reader/reader",
+    "pages/chat/chat",
+    "pages/study/study",
+    "pages/goals/goals",
+    "pages/achievements/achievements",
+    "pages/activity/activity",
+    "pages/settings/settings",
+    "pages/forum/forum",
+    "pages/forum-detail/forum-detail"
+  ],
+  "subpackages": [
+    {
+      "root": "pages/secondary",
+      "name": "secondary",
+      "pages": [
+        "profile/profile",
+        "privacy/privacy",
+        "security/security",
+        "appearance/appearance",
+        "language/language",
+        "notification/notification",
+        "study-settings/study-settings",
+        "help/help",
+        "about/about",
+        "rate/rate",
+        "membership/membership",
+        "points/points",
+        "reading-stats/reading-stats"
+      ]
+    },
+    {
+      "root": "pages/feature",
+      "name": "feature",
+      "pages": [
+        "check-in-camp/check-in-camp",
+        "camp-detail/camp-detail",
+        "dubbing/dubbing",
+        "poem-quiz/poem-quiz",
+        "food-culture/food-culture",
+        "lottery/lottery",
+        "web-preview/web-preview"
+      ]
+    }
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1c1917",
+    "navigationBarTitleText": "数字夫子",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1c1917"
+  },
+  "tabBar": {
+    "color": "#78716c",
+    "selectedColor": "#fbbf24",
+    "backgroundColor": "#1c1917",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "images/home.jpg",
+        "selectedIconPath": "images/home-active.jpg"
+      },
+      {
+        "pagePath": "pages/library/library",
+        "text": "典籍库",
+        "iconPath": "images/library.jpg",
+        "selectedIconPath": "images/library-active.jpg"
+      },
+      {
+        "pagePath": "pages/forum/forum",
+        "text": "论坛",
+        "iconPath": "images/chat.jpg",
+        "selectedIconPath": "images/chat-active.jpg"
+      },
+      {
+        "pagePath": "pages/study/study",
+        "text": "我的学习",
+        "iconPath": "images/study.jpg",
+        "selectedIconPath": "images/study-active.jpg"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "设置",
+        "iconPath": "images/settings.jpg",
+        "selectedIconPath": "images/settings-active.jpg"
+      }
+    ]
+  },
+  "lazyCodeLoading": "requiredComponents"
+}
