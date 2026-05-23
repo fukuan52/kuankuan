@@ -1,0 +1,114 @@
+{
+  "permissions": {
+    "add": true,
+    "delete": false,
+    "query": true,
+    "update": false,
+    "create": true,
+    "read": true
+  },
+  "collection": "vip_users",
+  "description": "VIP用户数据表",
+  "fields": [
+    {
+      "fieldName": "_id",
+      "description": "记录ID"
+    },
+    {
+      "fieldName": "openid",
+      "description": "用户唯一标识",
+      "required": true,
+      "index": true
+    },
+    {
+      "fieldName": "nickname",
+      "description": "用户昵称"
+    },
+    {
+      "fieldName": "avatarUrl",
+      "description": "用户头像"
+    },
+    {
+      "fieldName": "vipLevel",
+      "description": "VIP等级：1-月卡，2-季卡，3-年卡，4-永久",
+      "required": true,
+      "index": true
+    },
+    {
+      "fieldName": "vipStatus",
+      "description": "VIP状态：active-激活，expired-过期，cancelled-取消",
+      "defaultValue": "active",
+      "index": true
+    },
+    {
+      "fieldName": "startTime",
+      "description": "VIP开始时间"
+    },
+    {
+      "fieldName": "expireTime",
+      "description": "VIP到期时间",
+      "required": true,
+      "index": true
+    },
+    {
+      "fieldName": "orderId",
+      "description": "订单号"
+    },
+    {
+      "fieldName": "paymentMethod",
+      "description": "支付方式"
+    },
+    {
+      "fieldName": "createTime",
+      "description": "记录创建时间"
+    },
+    {
+      "fieldName": "updateTime",
+      "description": "最后更新时间"
+    },
+    {
+      "fieldName": "totalPurchaseCount",
+      "description": "累计购买次数"
+    },
+    {
+      "fieldName": "totalPurchaseAmount",
+      "description": "累计购买金额"
+    },
+    {
+      "fieldName": "adminAdded",
+      "description": "是否管理员添加",
+      "defaultValue": false
+    },
+    {
+      "fieldName": "adminAddReason",
+      "description": "管理员添加原因"
+    },
+    {
+      "fieldName": "adminAddTime",
+      "description": "管理员添加时间"
+    },
+    {
+      "fieldName": "privileges",
+      "description": "VIP特权列表",
+      "type": "array"
+    }
+  ],
+  "indexes": [
+    {
+      "indexName": "openid_index",
+      "fieldName": "openid",
+      "indexType": "primary"
+    },
+    {
+      "indexName": "vip_status_expire",
+      "fieldName": "vipStatus_expireTime",
+      "indexType": "compound"
+    }
+  ],
+  "rules": {
+    "read": "doc.openid == auth.openid || auth.isAdmin",
+    "write": "auth.isAdmin",
+    "update": "auth.isAdmin",
+    "delete": "false"
+  }
+}
