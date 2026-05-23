@@ -1,0 +1,20 @@
+/* 
+ * 由于微信小程序环境限制，无法使用外部字体
+ * 使用系统字体作为替代
+ */
+
+/* 衬线字体 - 使用系统自带的中文衬线字体 */
+@font-face {
+  font-family: 'ChineseSerif';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Songti SC'), local('SimSun'), local('STSong');
+}
+
+/* 无衬线字体 - 使用系统自带的中文无衬线字体 */
+@font-face {
+  font-family: 'ChineseSans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('PingFang SC'), local('Microsoft YaHei'), local('Heiti SC');
+}
